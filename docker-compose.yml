@@ -1,3 +1,4 @@
+### remember: docker swarm version on hostinger vps 
 services:
   amiticia-site:
     build:
@@ -13,16 +14,19 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 250MB     
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.amiticia.rule=Host(`amiticia.cc`)"
-      - "traefik.docker.network=network_public"      
-      - "traefik.http.routers.amiticia.entrypoints=websecure"
-      - "traefik.http.routers.amiticia.tls.certresolver=letsencryptresolver"
-      - "traefik.http.routers.amiticia.service=amiticia"
-      - "traefik.http.services.amiticia.loadbalancer.server.port=3000"
+          memory: 100MB           
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=network_public"
+        - "traefik.http.routers.amiticia.rule=Host(`amiticia.cc`,`www.amiticia.cc`)"
+        - "traefik.http.routers.amiticia.entrypoints=websecure"
+        - "traefik.http.routers.amiticia.priority=1"
+        - "traefik.http.routers.amiticia.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.amiticia.service=amiticia"
+        - "traefik.http.services.amiticia.loadbalancer.server.port=3000"
 
 networks:
   network_public:
-  external: true
+    external: true
+    attachable: true
+    name: network_public
