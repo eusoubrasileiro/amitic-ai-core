@@ -1,4 +1,4 @@
-import logo from "@/assets/amiticia-logo.png";
+import logo from "@/assets/amiticia-logo.svg";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();

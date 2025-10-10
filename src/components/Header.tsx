@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Languages } from "lucide-react";
-import logo from "@/assets/amiticia-logo.png";
+import logo from "@/assets/amiticia-logo.svg";
 
 interface HeaderProps {
   language: "pt" | "en";

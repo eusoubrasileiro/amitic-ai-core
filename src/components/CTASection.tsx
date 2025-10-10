@@ -9,8 +9,8 @@ const content = {
   pt: {
     title: "Vamos começar?",
     description:
-      "Fale com a gente para um diagnóstico objetivo: o que ativar primeiro, qual ROI esperar e qual o MVP mais rápido de colocar na rua.",
-    cta: "Fale com a gente no WhatsApp",
+      "Fale conosco para um diagnóstico objetivo: o que ativar primeiro, qual ROI esperar e qual o MVP mais rápido de colocar na rua.",
+    cta: "Fale conosco",
   },
   en: {
     title: "Let's get started?",
