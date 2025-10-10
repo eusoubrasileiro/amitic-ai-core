@@ -15,7 +15,7 @@ const content = {
       },
       {
         icon: TrendingDown,
-        text: "Menos custo com automações (n8n) e agentes que executam tarefas",
+        text: "Menos custo com automações e agentes que executam tarefas",
       },
       {
         icon: Target,

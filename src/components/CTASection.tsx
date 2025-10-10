@@ -9,7 +9,7 @@ const content = {
   pt: {
     title: "Vamos começar?",
     description:
-      "Fale conosco para um diagnóstico objetivo: o que ativar primeiro, qual ROI esperar e qual o MVP mais rápido de colocar na rua.",
+      "Fale conosco para um diagnóstico objetivo: no que focar primeiro, qual ROI esperar e vamos desenhar um MVP ideal.",
     cta: "Fale conosco",
   },
   en: {
