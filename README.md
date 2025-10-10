@@ -6,13 +6,23 @@
 
 ### Running the Application
 
-To run the application locally, you can use Docker Compose:
+To run the application locally:
 
 ```bash
-sudo docker compose up -d --build
+npm run dev
+# or
+npm run start
 ```
 
-This command will build the Docker image and start the application. The app will be also accessible at `http://localhost:3000`.
+### Running with Docker (Swarm only)
+
+Copy amiticia-site.yml to your server and use Docker to deploy the application:
+
+```bash
+docker stack deploy -c amiticia-site.yml amiticia-site
+```
+
+Then `curl http://localhost:3000` works on the VPS
 
 ## What technologies are used for this project?
 

@@ -1,9 +1,15 @@
 ### remember: docker swarm version on hostinger vps 
 services:
   amiticia-site:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: node:20
+    command: > 
+      bash -c "
+      cd /root 
+      && git clone https://github.com/eusoubrasileiro/amitic-ai-core 
+      && cd amitic-ai-core 
+      && npm install 
+      && npm run build 
+      && npm run start"
     networks:
       - network_public
     deploy:
@@ -14,10 +20,10 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 100MB           
+          memory: 500MB           
       labels:
         - "traefik.enable=true"
-        - "traefik.docker.network=network_public"
+        - "traefik.swarm.network=network_public"
         - "traefik.http.routers.amiticia.rule=Host(`amiticia.cc`,`www.amiticia.cc`)"
         - "traefik.http.routers.amiticia.entrypoints=websecure"
         - "traefik.http.routers.amiticia.priority=1"
