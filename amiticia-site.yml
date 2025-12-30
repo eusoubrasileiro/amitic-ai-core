@@ -1,5 +1,5 @@
-### Remember: docker swarm version on hostinger vps 
-### Use: `docker stack deploy -c amiticia-site.yml amiticia`
+### Remember: docker compose version (non-swarm)
+### Use: `docker compose -f amiticia-site.yml up -d`
 version: "3.9"
 
 services:
@@ -17,36 +17,25 @@ services:
       "
     networks:
       - network_public
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      resources:
-        # give headroom for install/build so it won't be OOM-killed
-        limits:
-          cpus: "0.75"
-          memory: "600MB"
-      labels:
-        - "traefik.enable=true"
-        # Swarm provider → use traefik.swarm.network and attach to the same overlay as Traefik
-        - "traefik.swarm.network=network_public"
-        # v3 syntax: one host per Host(), combined with ||
-        - "traefik.http.routers.amiticia.rule=Host(`amiticia.cc`) || Host(`www.amiticia.cc`)"
-        - "traefik.http.routers.amiticia.entrypoints=websecure"
-        - "traefik.http.routers.amiticia.tls.certresolver=letsencryptresolver"
-        # service/port Traefik should hit
-        - "traefik.http.services.amiticia.loadbalancer.server.port=3000"
-        # health check so Traefik waits until the app is actually serving
-        - "traefik.http.services.amiticia.loadbalancer.healthcheck.path=/"
-        - "traefik.http.services.amiticia.loadbalancer.healthcheck.interval=10s"
-        - "traefik.http.services.amiticia.loadbalancer.healthcheck.timeout=3s"
-        # HTTP → HTTPS redirect on the web entrypoint
-        - "traefik.http.routers.amiticia-redirect.rule=Host(`amiticia.cc`) || Host(`www.amiticia.cc`)"
-        - "traefik.http.routers.amiticia-redirect.entrypoints=web"
-        - "traefik.http.routers.amiticia-redirect.middlewares=amiticia-https"
-        - "traefik.http.middlewares.amiticia-https.redirectscheme.scheme=https"
+    labels:
+      - "traefik.enable=true"
+      # Docker provider → use traefik.docker.network
+      - "traefik.docker.network=network_public"
+      # v3 syntax: one host per Host(), combined with ||
+      - "traefik.http.routers.amiticia.rule=Host(`amiticia.cc`) || Host(`www.amiticia.cc`)"
+      - "traefik.http.routers.amiticia.entrypoints=websecure"
+      - "traefik.http.routers.amiticia.tls.certresolver=myresolver"
+      # service/port Traefik should hit
+      - "traefik.http.services.amiticia.loadbalancer.server.port=3000"
+      # health check so Traefik waits until the app is actually serving
+      - "traefik.http.services.amiticia.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.amiticia.loadbalancer.healthcheck.interval=10s"
+      - "traefik.http.services.amiticia.loadbalancer.healthcheck.timeout=3s"
+      # HTTP → HTTPS redirect on the web entrypoint
+      - "traefik.http.routers.amiticia-redirect.rule=Host(`amiticia.cc`) || Host(`www.amiticia.cc`)"
+      - "traefik.http.routers.amiticia-redirect.entrypoints=web"
+      - "traefik.http.routers.amiticia-redirect.middlewares=amiticia-https"
+      - "traefik.http.middlewares.amiticia-https.redirectscheme.scheme=https"
 
 networks:
   network_public:
