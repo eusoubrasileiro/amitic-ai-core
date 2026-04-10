@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.github
+.vscode
+.idea
+*.log
+mcp-logs.txt
+wa-logs.txt
+CLAUDE.md
+README.md
+.DS_Store
+bun.lockb

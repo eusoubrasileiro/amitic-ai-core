@@ -14,7 +14,7 @@ Marketing website for **amiticia.cc** — the public-facing landing page for the
 - **Router**: react-router-dom v6
 - **Forms**: react-hook-form + zod
 - **Icons**: lucide-react
-- **Package manager**: npm (note: repo has both `package-lock.json` and `bun.lockb` — `npm ci` is the source of truth, matching the Docker deploy)
+- **Package manager**: npm (`package-lock.json` is the source of truth, matching the Docker build)
 
 ## Scripts
 
@@ -30,39 +30,58 @@ npm run preview    # Preview built dist on :3000 (host mode)
 
 ```
 src/
-  pages/          # Top-level routes
-  components/     # Shared components
-    ui/           # shadcn-ui primitives (don't edit by hand — use shadcn CLI)
-  hooks/          # Custom hooks
-  lib/            # Utilities (cn, etc.)
-  assets/         # Static assets imported by code
-public/           # Static files served as-is
-amiticia-site.yml # Docker compose for production deployment
+  pages/            # Top-level routes
+  components/       # Shared components
+    ui/             # shadcn-ui primitives (don't edit by hand — use shadcn CLI)
+  hooks/            # Custom hooks
+  lib/              # Utilities (cn, etc.)
+  assets/           # Static assets imported by code
+public/             # Static files served as-is
+Dockerfile          # Multi-stage: node builder → nginx runtime
+nginx.conf          # SPA fallback + asset caching, listens on :3000
+amiticia-site.yml   # Production compose file (pulls pre-built image)
+.github/workflows/
+  deploy.yml        # CI/CD: build → push to ghcr.io → SSH deploy
 ```
 
 ## Deployment
 
-Production runs on the Hostinger VPS. Compose file `amiticia-site.yml` (also kept at `/root/amiticia-site/amiticia-site.yml` on the server) runs a `node:20` container that:
+**Fully automated.** Push to `main` → GitHub Actions builds a Docker image → pushes to `ghcr.io/eusoubrasileiro/amitic-ai-core:latest` → SSHes into the Hostinger VPS → `docker compose pull && up -d`. End-to-end takes ~2 min.
 
-1. Git-clones this repo into `/srv/app` (idempotent — skips if already cloned)
-2. `git pull` to get latest `main`
-3. `npm ci && npm run build`
-4. `npx serve -s dist -l 3000` to serve the built SPA
+### How it works
 
-Traefik labels route `amiticia.cc` and `www.amiticia.cc` with HTTPS via the `myresolver` certresolver. Container is on the external `network_public` Docker network and has `restart: unless-stopped` so it recovers from reboots.
+1. **Image build** (`Dockerfile`): multi-stage. Stage 1 `node:20-alpine` runs `npm ci && npm run build`. Stage 2 `nginx:alpine` copies `dist/` into `/usr/share/nginx/html` and serves it on port 3000 using `nginx.conf` (SPA fallback + immutable caching for `/assets/`).
+2. **Registry**: `ghcr.io/eusoubrasileiro/amitic-ai-core`. Tagged `:latest` and `:sha-<short>` per commit. Package is public so the VPS pulls without auth.
+3. **Compose on the VPS** (`/root/amiticia-site/amiticia-site.yml`): `image: ghcr.io/.../amitic-ai-core:latest`, `pull_policy: always`, `restart: unless-stopped`. Traefik labels unchanged — still routes `amiticia.cc` / `www.amiticia.cc` via `myresolver`, on the external `network_public` network.
+4. **CI/CD** (`.github/workflows/deploy.yml`): triggers on push to `main` or manual dispatch. Two jobs: `build-and-push` (uses `docker/build-push-action` with GHA cache) and `deploy` (uses `appleboy/ssh-action` to run `docker compose pull && up -d && docker image prune -f` on the VPS).
 
-### Deploy flow
+### Required GitHub secrets
 
-1. Commit + push to `main` on GitHub.
-2. On the VPS: `ssh hostinger` then `cd /root/amiticia-site && docker compose -f amiticia-site.yml down && docker compose -f amiticia-site.yml up -d`. The container re-pulls and rebuilds on startup.
-3. If `amiticia-site.yml` itself changed, `scp` it to `/root/amiticia-site/` first before the down/up.
+| Name | Value |
+|---|---|
+| `SSH_HOST` | Hostinger IP |
+| `SSH_USER` | `root` |
+| `SSH_KEY` | Private ed25519 key for the Actions deploy user |
+
+`GITHUB_TOKEN` (auto-provided) handles ghcr.io push.
+
+### Manual deploy (escape hatch)
+
+If Actions is broken:
+```bash
+ssh hostinger
+cd /root/amiticia-site
+docker compose -f amiticia-site.yml pull
+docker compose -f amiticia-site.yml up -d
+```
+
+To roll back to a specific commit, edit the image tag in `amiticia-site.yml` to `ghcr.io/.../amitic-ai-core:sha-<short>` and run the pull+up commands above.
 
 ### Gotchas
 
-- **Repo name mismatch**: the git origin is `eusoubrasileiro/amitic-ai-core.git`, not `amiticia-site`. Both names refer to the same repo. The Docker command hardcodes the `amitic-ai-core` URL.
-- **`vite.config.ts` `preview.allowedHosts`** must include any hostname Traefik routes to it (currently `amiticia.cc`, `www.amiticia.cc`, `localhost`). Missing entries cause Vite to reject requests.
-- **Don't use `docker start` after a reboot** — the inline bash bootstrap would try to re-clone into an existing `/srv/app`. Always `docker compose down && up -d` for a clean rebuild. The idempotent guard handles this now, but `down && up` is still the right pattern.
-- **Never commit** `mcp-logs.txt` or `wa-logs.txt` — these are local debug artifacts.
+- **Repo name mismatch**: git origin is `eusoubrasileiro/amitic-ai-core.git`, not `amiticia-site`. Both names refer to the same repo. The ghcr.io image name follows the repo name.
+- **`vite.config.ts` `preview.allowedHosts`** is only used for `npm run preview` (local dev). Production serves via nginx, which doesn't care about host headers. Leaving it correct anyway is cheap insurance.
+- **Never commit** `mcp-logs.txt` or `wa-logs.txt` — local debug artifacts (already gitignored).
 
 ## Parent Context
 

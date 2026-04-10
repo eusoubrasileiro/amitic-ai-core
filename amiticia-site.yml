@@ -3,18 +3,9 @@
 
 services:
   amiticia:
-    image: node:20
+    image: ghcr.io/eusoubrasileiro/amitic-ai-core:latest
+    pull_policy: always
     restart: unless-stopped
-    command: >
-      bash -lc "
-      cd /srv &&
-      ( [ -d app/.git ] || git clone --depth=1 https://github.com/eusoubrasileiro/amitic-ai-core app ) &&
-      cd app &&
-      git pull &&
-      npm ci &&
-      npm run build &&
-      npx serve -s dist -l 3000
-      "
     networks:
       - network_public
     labels:
