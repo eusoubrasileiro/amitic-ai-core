@@ -1,6 +1,5 @@
 ### Remember: docker compose version (non-swarm)
 ### Use: `docker compose -f amiticia-site.yml up -d`
-version: "3.9"
 
 services:
   amiticia:
