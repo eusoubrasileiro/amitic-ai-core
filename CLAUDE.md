@@ -83,6 +83,18 @@ To roll back to a specific commit, edit the image tag in `amiticia-site.yml` to 
 - **`vite.config.ts` `preview.allowedHosts`** is only used for `npm run preview` (local dev). Production serves via nginx, which doesn't care about host headers. Leaving it correct anyway is cheap insurance.
 - **Never commit** `mcp-logs.txt` or `wa-logs.txt` — local debug artifacts (already gitignored).
 
+## Co-hospedagem em amiticia.cc (por path, via Traefik)
+
+Este SPA responde à raiz de `amiticia.cc`. Outros projetos podem co-hospedar em **paths** do mesmo domínio usando **containers próprios** com label Traefik `PathPrefix(/<slug>)` de prioridade maior. **NÃO incluir esses projetos neste repo** — eles têm compose/CI/CD próprios.
+
+Paths co-hospedados atualmente:
+
+| Path | Projeto / container | Fonte |
+|---|---|---|
+| `/pibconfins` | Tesouraria PIB Confins (dashboard financeiro da igreja) | `~/Data/Documents/Finance/Tesouraria-PIB-Confins/` |
+
+Ao adicionar uma nova rota neste SPA (ex.: `/blog`), confirmar antes que o path não conflita com nenhum co-hospedado.
+
 ## Parent Context
 
 This repo is part of the AmiticIA monorepo at `~/Projects/amiticia/repositories/`. See the root `CLAUDE.md` there for cross-project conventions (pnpm workspaces elsewhere, WhatsApp integration patterns, etc.). This site is an outlier: it uses npm and is not part of any pnpm workspace.
