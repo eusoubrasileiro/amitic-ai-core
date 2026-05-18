@@ -11,7 +11,7 @@ const content = {
     title: "Engenharia de verdade por trás da IA",
     lead: "A AmiticIA nasceu de uma convicção simples: inteligência artificial só entrega valor quando é construída com arquitetura e engenharia corretas desde o primeiro dia.",
     pitch:
-      "Sou geofísico formado pela USP e desenvolvo software há mais de 20 anos — comecei com computação científica e de alto desempenho (HPC), e trabalhei para a Petrobras. Inteligência artificial não é novidade para mim: programei minha primeira rede neural em 2006 na faculdade e trabalho mais intensamente com IA desde 2020, bem antes do ChatGPT. É para isso que existe a AmiticIA: inteligência artificial construída com arquitetura e engenharia corretas desde o início — soluções que funcionam, escalam e não viram dor de cabeça lá na frente.",
+      "Sou geofísico formado pela USP e desenvolvo software há mais de 20 anos — comecei com computação científica e de alto desempenho (HPC), e trabalhei para a Petrobras. Inteligência artificial não é novidade para mim: programei minha primeira rede neural em 2006 na faculdade. Desde 2020 tenho desenvolvidos projetos com IA, bem antes do ChatGPT. É para isso que existe a AmiticIA: inteligência artificial construída com arquitetura e engenharia corretas desde o início — soluções que funcionam, escalam e não viram dor de cabeça lá na frente.",
     name: "André Ferreira",
     role: "Fundador da AmiticIA",
     initials: "AF",
@@ -26,7 +26,7 @@ const content = {
     title: "Real engineering behind the AI",
     lead: "AmiticIA was born from a simple conviction: artificial intelligence only delivers value when it's built with the right architecture and engineering from day one.",
     pitch:
-      "I'm a geophysicist trained at USP and have been developing software for over 20 years — I started in scientific and high-performance computing (HPC), and worked for Petrobras. Artificial intelligence is nothing new to me: I programmed my first neural network in 2006 at university and have worked intensively with AI since 2020, well before ChatGPT. That's exactly why AmiticIA exists: artificial intelligence built with the right architecture and engineering from the start — solutions that work, scale, and don't become a headache down the road.",
+      "I'm a geophysicist trained at USP and have been developing software for over 20 years — I started in scientific and high-performance computing (HPC), and worked for Petrobras. Artificial intelligence is nothing new to me: I programmed my first neural network in 2006 at university. Since 2020 I've been developing AI projects, well before ChatGPT. That's exactly why AmiticIA exists: artificial intelligence built with the right architecture and engineering from the start — solutions that work, scale, and don't become a headache down the road.",
     name: "André Ferreira",
     role: "Founder of AmiticIA",
     initials: "AF",
