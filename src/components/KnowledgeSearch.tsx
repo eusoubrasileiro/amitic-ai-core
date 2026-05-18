@@ -43,6 +43,13 @@ interface ResearchResult {
   sources_used: { kb_cards: number; curated: number; web: number };
 }
 
+interface HistoryEntry {
+  id: string;
+  question: string;
+  retrieval_date: string | null;
+  confidence: string | null;
+}
+
 const TIER_STYLE: Record<string, string> = {
   kb: "border-emerald-700 bg-emerald-950 text-emerald-300",
   curated: "border-sky-700 bg-sky-950 text-sky-300",
@@ -151,6 +158,49 @@ function toMarkdown(r: ResearchResult): string {
   );
 }
 
+// Past deep-research runs, persisted server-side. `refresh` bumps after a new
+// run so the list re-fetches; picking one reloads its full stored result.
+function ResearchHistory({
+  refresh,
+  onPick,
+}: {
+  refresh: number;
+  onPick: (id: string) => void;
+}) {
+  const [items, setItems] = useState<HistoryEntry[]>([]);
+  useEffect(() => {
+    fetch(`${window.location.origin}/k/api/history`)
+      .then((r) => (r.ok ? r.json() : { history: [] }))
+      .then((d) => setItems(d.history ?? []))
+      .catch(() => setItems([]));
+  }, [refresh]);
+  if (items.length === 0) return null;
+  return (
+    <div className="mt-4 rounded-lg border border-border bg-card/50 p-4">
+      <div className="text-sm font-semibold text-foreground">
+        Recent deep research
+      </div>
+      <ul className="mt-2 grid gap-0.5">
+        {items.map((e) => (
+          <li key={e.id}>
+            <button
+              type="button"
+              onClick={() => onPick(e.id)}
+              className="w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-card"
+            >
+              <span className="text-foreground">{e.question}</span>
+              <span className="ml-2 whitespace-nowrap text-xs text-muted-foreground">
+                {e.retrieval_date}
+                {e.confidence ? ` · ${e.confidence}` : ""}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function ResearchView({ result }: { result: ResearchResult }) {
   const [copied, setCopied] = useState(false);
   const copyMarkdown = async () => {
@@ -241,6 +291,12 @@ const KnowledgeSearch = () => {
   const [error, setError] = useState("");
   const [kbResult, setKbResult] = useState<KbResult | null>(null);
   const [researchResult, setResearchResult] = useState<ResearchResult | null>(null);
+  const [historyRefresh, setHistoryRefresh] = useState(0);
+
+  // location.origin (scheme+host only) — never carries credentials. A relative
+  // path would inherit them from a `user:pass@` page URL, and the Fetch API
+  // rejects constructing a request from a credentialed URL.
+  const apiUrl = (path: string) => `${window.location.origin}${path}`;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,12 +307,8 @@ const KnowledgeSearch = () => {
     setKbResult(null);
     setResearchResult(null);
     try {
-      // Build from location.origin (scheme+host only — never carries
-      // credentials). A relative path would inherit credentials if the page
-      // URL had any (e.g. a shared `user:pass@` link), and the Fetch API
-      // rejects constructing a request from a credentialed URL.
       const path = mode === "kb" ? "/k/api/search" : "/k/api/research";
-      const res = await fetch(`${window.location.origin}${path}`, {
+      const res = await fetch(apiUrl(path), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: q }),
@@ -267,6 +319,30 @@ const KnowledgeSearch = () => {
       } else if (mode === "kb") {
         setKbResult(data as KbResult);
       } else {
+        setResearchResult(data as ResearchResult);
+        setHistoryRefresh((n) => n + 1); // a new run was just persisted
+      }
+    } catch {
+      setError("Could not reach the research service.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Reload a past research run from the server-side history.
+  const pickHistory = async (id: string) => {
+    if (loading) return;
+    setLoading(true);
+    setError("");
+    setKbResult(null);
+    setResearchResult(null);
+    try {
+      const res = await fetch(apiUrl(`/k/api/history/${id}`));
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setError(data.error || "Could not load that history entry.");
+      } else {
+        setMode("research");
         setResearchResult(data as ResearchResult);
       }
     } catch {
@@ -328,6 +404,7 @@ const KnowledgeSearch = () => {
       {error && <p className="mt-6 text-amber-300">{error}</p>}
       {kbResult && <CardList result={kbResult} />}
       {researchResult && <ResearchView result={researchResult} />}
+      {!loading && <ResearchHistory refresh={historyRefresh} onPick={pickHistory} />}
     </div>
   );
 };
