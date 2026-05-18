@@ -5,6 +5,7 @@ import { BenefitsSection } from "@/components/BenefitsSection";
 import { AgendaZapFeatureSection } from "@/components/AgendaZapFeatureSection";
 import { StackSection } from "@/components/StackSection";
 import { ProcessSection } from "@/components/ProcessSection";
+import { FounderSection } from "@/components/FounderSection";
 import { AudienceSection } from "@/components/AudienceSection";
 import { CTASection } from "@/components/CTASection";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
@@ -25,6 +26,7 @@ const Index = () => {
       <AgendaZapFeatureSection language={language} />
       <StackSection language={language} />
       <ProcessSection language={language} />
+      <FounderSection language={language} />
       <AudienceSection language={language} />
       <CTASection language={language} />
       <Footer />
