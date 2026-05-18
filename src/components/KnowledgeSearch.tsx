@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -99,25 +99,96 @@ function CardList({ result }: { result: KbResult }) {
   );
 }
 
+// Deep research has no streamed progress — but it always runs these stages in
+// this order, so a timed cycle through them is honest, not decorative.
+const RESEARCH_STAGES = [
+  "Searching the knowledge base…",
+  "Querying curated sources — arXiv, Willison, METR, Epoch…",
+  "Scanning the tuned open web…",
+  "Synthesizing a grounded, cited answer…",
+];
+
+function ResearchLoader() {
+  const [stage, setStage] = useState(0);
+  useEffect(() => {
+    const t = setInterval(
+      () => setStage((s) => Math.min(s + 1, RESEARCH_STAGES.length - 1)),
+      22000,
+    );
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div className="mt-6 flex items-center gap-3 rounded-lg border border-border bg-card p-4">
+      <span className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div>
+        <div className="text-sm text-foreground">{RESEARCH_STAGES[stage]}</div>
+        <div className="mt-0.5 text-xs text-muted-foreground">
+          All three tiers run — this takes ~1-2 minutes.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Render a research result as plain Markdown — for pasting into another model
+// (GPT, Gemini, …) to get a second, critical opinion.
+function toMarkdown(r: ResearchResult): string {
+  const citations = r.citations
+    .map(
+      (c, i) =>
+        `${i + 1}. [${c.tier}] ${c.title || c.url} — ${c.url} (${c.date ?? "date unknown"})`,
+    )
+    .join("\n");
+  const warnings = r.warnings.length
+    ? `\n\n## Grounding warnings\n${r.warnings.map((w) => `- ${w}`).join("\n")}`
+    : "";
+  return (
+    `# Research: ${r.question}\n\n${r.answer}\n\n` +
+    `## Citations\n${citations || "(none)"}${warnings}\n\n---\n` +
+    `confidence: ${r.confidence} · retrieved ${r.retrieval_date} · ` +
+    `sources used: KB ${r.sources_used.kb_cards}, ` +
+    `curated ${r.sources_used.curated}, web ${r.sources_used.web}\n`
+  );
+}
+
 function ResearchView({ result }: { result: ResearchResult }) {
+  const [copied, setCopied] = useState(false);
+  const copyMarkdown = async () => {
+    try {
+      await navigator.clipboard.writeText(toMarkdown(result));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap gap-2 text-xs">
-        <Badge className="border-border bg-card text-muted-foreground">
-          confidence: {result.confidence}
-        </Badge>
-        <Badge className="border-border bg-card text-muted-foreground">
-          retrieved {result.retrieval_date}
-        </Badge>
-        <Badge className="border-emerald-700 bg-emerald-950 text-emerald-300">
-          KB {result.sources_used.kb_cards}
-        </Badge>
-        <Badge className="border-sky-700 bg-sky-950 text-sky-300">
-          curated {result.sources_used.curated}
-        </Badge>
-        <Badge className="border-zinc-700 bg-zinc-900 text-zinc-400">
-          web {result.sources_used.web}
-        </Badge>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-wrap gap-2 text-xs">
+          <Badge className="border-border bg-card text-muted-foreground">
+            confidence: {result.confidence}
+          </Badge>
+          <Badge className="border-border bg-card text-muted-foreground">
+            retrieved {result.retrieval_date}
+          </Badge>
+          <Badge className="border-emerald-700 bg-emerald-950 text-emerald-300">
+            KB {result.sources_used.kb_cards}
+          </Badge>
+          <Badge className="border-sky-700 bg-sky-950 text-sky-300">
+            curated {result.sources_used.curated}
+          </Badge>
+          <Badge className="border-zinc-700 bg-zinc-900 text-zinc-400">
+            web {result.sources_used.web}
+          </Badge>
+        </div>
+        <button
+          type="button"
+          onClick={copyMarkdown}
+          className="shrink-0 rounded-md border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+        >
+          {copied ? "Copied ✓" : "Copy as Markdown"}
+        </button>
       </div>
 
       <article className="prose prose-invert mt-4 max-w-none prose-a:text-primary">
@@ -250,11 +321,7 @@ const KnowledgeSearch = () => {
         </p>
       </form>
 
-      {loading && mode === "research" && (
-        <p className="mt-6 text-muted-foreground">
-          Researching across all three tiers… this takes ~1-2 minutes.
-        </p>
-      )}
+      {loading && mode === "research" && <ResearchLoader />}
       {loading && mode === "kb" && (
         <p className="mt-6 text-muted-foreground">Searching…</p>
       )}
