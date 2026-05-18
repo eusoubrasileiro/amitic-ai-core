@@ -42,7 +42,7 @@ export const FounderSection = ({ language }: FounderSectionProps) => {
   const t = content[language];
 
   return (
-    <section className="py-20 relative">
+    <section id="quem-somos" className="py-20 relative scroll-mt-20">
       <div className="absolute inset-0 bg-gradient-glow opacity-20" />
 
       <div className="container mx-auto px-6 relative z-10">

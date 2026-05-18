@@ -42,7 +42,7 @@ export const AudienceSection = ({ language }: AudienceSectionProps) => {
   const t = content[language];
 
   return (
-    <section className="py-20 relative">
+    <section id="para-quem-e" className="py-20 relative scroll-mt-20">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 animate-fade-in">
           {t.title}
