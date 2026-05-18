@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import KnowledgeSearch from "@/components/KnowledgeSearch";
 
 // Mirrors topics.py TOPICS in the content-watcher repo. Canonical display order.
 const TOPICS: { slug: string; title: string; blurb: string }[] = [
@@ -24,7 +25,15 @@ function TopicIndex() {
       <p className="mt-2 text-muted-foreground">
         Current AI-agent knowledge — synthesized, rank-ordered, date-filtered. Updated by the watcher.
       </p>
-      <div className="mt-10 grid gap-3">
+
+      <div className="mt-8">
+        <KnowledgeSearch />
+      </div>
+
+      <h2 className="mt-12 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        Browse topics
+      </h2>
+      <div className="mt-4 grid gap-3">
         {TOPICS.map((t) => (
           <Link
             key={t.slug}
