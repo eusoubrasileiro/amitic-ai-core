@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -89,15 +90,27 @@ function CardList({ result }: { result: KbResult }) {
             {c.sowhat && (
               <p className="mt-1 text-sm italic text-muted-foreground">→ {c.sowhat}</p>
             )}
-            {c.link && (
-              <a
-                href={c.link}
-                target="_blank"
-                rel="noreferrer"
+            {/* A video-article card links inward to the article reader (it
+                carries its own outward link to the video); every other card
+                links straight to its external source. */}
+            {c.link && c.link.startsWith("articles/") ? (
+              <Link
+                to={`/k/article/${c.link.slice("articles/".length)}`}
                 className="mt-2 inline-block text-xs text-primary hover:underline"
               >
-                source ↗
-              </a>
+                Read article →
+              </Link>
+            ) : (
+              c.link && (
+                <a
+                  href={c.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-block text-xs text-primary hover:underline"
+                >
+                  source ↗
+                </a>
+              )
             )}
           </div>
         ))}

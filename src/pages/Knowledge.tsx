@@ -100,11 +100,60 @@ function TopicPage({ slug }: { slug: string }) {
   );
 }
 
+// A distilled video-article (Phase 7). Unlike a topic page — served as a
+// static .md from /k/data/ — an article is fetched through the research
+// container's /k/api/article/{slug} route, which reads the knowledge repo's
+// articles/ directory. The article's markdown carries its own outward link
+// back to the source video.
+function ArticlePage({ slug }: { slug: string }) {
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  const [markdown, setMarkdown] = useState("");
+
+  useEffect(() => {
+    setState("loading");
+    // location.origin only — a relative URL would inherit credentials from a
+    // `user:pass@` page URL and the Fetch API rejects credentialed URLs.
+    fetch(`${window.location.origin}/k/api/article/${slug}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((d) => {
+        setMarkdown(d.markdown ?? "");
+        setState("ready");
+      })
+      .catch(() => setState("error"));
+  }, [slug]);
+
+  return (
+    <div className="mx-auto max-w-3xl px-6 py-12">
+      <Link to="/k" className="text-sm text-primary hover:underline">
+        ← All topics
+      </Link>
+      {state === "loading" && <p className="mt-8 text-muted-foreground">Loading…</p>}
+      {state === "error" && (
+        <p className="mt-8 text-muted-foreground">Could not load this article.</p>
+      )}
+      {state === "ready" && (
+        <article className="prose prose-invert mt-6 max-w-none prose-headings:scroll-mt-20 prose-a:text-primary">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+        </article>
+      )}
+    </div>
+  );
+}
+
 const Knowledge = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug, articleSlug } = useParams<{ slug: string; articleSlug: string }>();
   return (
     <div className="min-h-screen bg-background">
-      {slug ? <TopicPage slug={slug} /> : <TopicIndex />}
+      {articleSlug ? (
+        <ArticlePage slug={articleSlug} />
+      ) : slug ? (
+        <TopicPage slug={slug} />
+      ) : (
+        <TopicIndex />
+      )}
     </div>
   );
 };
