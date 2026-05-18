@@ -180,8 +180,12 @@ const KnowledgeSearch = () => {
     setKbResult(null);
     setResearchResult(null);
     try {
-      const endpoint = mode === "kb" ? "/k/api/search" : "/k/api/research";
-      const res = await fetch(endpoint, {
+      // Build from location.origin (scheme+host only — never carries
+      // credentials). A relative path would inherit credentials if the page
+      // URL had any (e.g. a shared `user:pass@` link), and the Fetch API
+      // rejects constructing a request from a credentialed URL.
+      const path = mode === "kb" ? "/k/api/search" : "/k/api/research";
+      const res = await fetch(`${window.location.origin}${path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: q }),
