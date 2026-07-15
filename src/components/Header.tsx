@@ -16,6 +16,7 @@ const content = {
     nav: [
       { href: "#quem-somos", label: "Quem somos" },
       { href: "#agendazap", label: "AgendaZap" },
+      { href: "#patricia", label: "Patrícia" },
       { href: "#como-trabalhamos", label: "Como trabalhamos" },
       { href: "#para-quem-e", label: "Para quem é" },
     ],
@@ -26,6 +27,7 @@ const content = {
     nav: [
       { href: "#quem-somos", label: "About" },
       { href: "#agendazap", label: "AgendaZap" },
+      { href: "#patricia", label: "Patrícia" },
       { href: "#como-trabalhamos", label: "How we work" },
       { href: "#para-quem-e", label: "Who it's for" },
     ],

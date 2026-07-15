@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { BenefitsSection } from "@/components/BenefitsSection";
 import { AgendaZapFeatureSection } from "@/components/AgendaZapFeatureSection";
+import { PatriciaFeatureSection } from "@/components/PatriciaFeatureSection";
 import { StackSection } from "@/components/StackSection";
 import { ProcessSection } from "@/components/ProcessSection";
 import { FounderSection } from "@/components/FounderSection";
@@ -24,6 +25,7 @@ const Index = () => {
       <Hero language={language} />
       <BenefitsSection language={language} />
       <AgendaZapFeatureSection language={language} />
+      <PatriciaFeatureSection language={language} />
       <StackSection language={language} />
       <ProcessSection language={language} />
       <FounderSection language={language} />
