@@ -46,7 +46,10 @@ export const Hero = ({
 
           <div className="pt-4">
             <Button asChild size="lg" className="gap-2 text-lg px-8 py-6 glow-effect">
-              
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="w-5 h-5" />
+                {t.cta}
+              </a>
             </Button>
           </div>
         </div>
