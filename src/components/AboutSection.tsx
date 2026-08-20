@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Brain, Cpu, Quote, Code2 } from "lucide-react";
 
-interface FounderSectionProps {
+interface AboutSectionProps {
   language: "pt" | "en";
 }
 
@@ -11,14 +11,11 @@ const content = {
     title: "Engenharia de verdade por trás da IA",
     lead: "A AmiticIA nasceu de uma convicção simples: inteligência artificial só entrega valor quando é construída com arquitetura e engenharia corretas desde o primeiro dia.",
     pitch:
-      "Sou geofísico formado pela USP e desenvolvo software há mais de 20 anos — comecei com computação científica e de alto desempenho (HPC), e trabalhei para a Petrobras. Inteligência artificial não é novidade para mim: programei minha primeira rede neural em 2006 na faculdade. Desde 2020 tenho desenvolvidos projetos com IA, bem antes do ChatGPT. É para isso que existe a AmiticIA: inteligência artificial construída com arquitetura e engenharia corretas desde o início — soluções que funcionam, escalam e não viram dor de cabeça lá na frente.",
-    name: "André Ferreira",
-    role: "Fundador da AmiticIA",
-    initials: "AF",
+      "A AmiticIA existe porque IA só entrega valor quando é construída com arquitetura e engenharia corretas desde o dia um. Nossa base é computação científica e de alto desempenho — e inteligência artificial não é novidade aqui: trabalhamos com redes neurais desde 2006 e desenvolvemos projetos com IA desde 2020, bem antes do ChatGPT. É isso que entregamos: soluções que funcionam, escalam e não viram dor de cabeça lá na frente.",
     highlights: [
       { icon: Code2, value: "+20 anos", label: "desenvolvendo software" },
-      { icon: Brain, value: "IA desde 2006", label: "primeira rede neural na faculdade" },
-      { icon: Cpu, value: "HPC", label: "computação de alto desempenho — Petrobras" },
+      { icon: Brain, value: "IA desde 2006", label: "antes do hype" },
+      { icon: Cpu, value: "HPC", label: "computação científica de alto desempenho" },
     ],
   },
   en: {
@@ -26,19 +23,16 @@ const content = {
     title: "Real engineering behind the AI",
     lead: "AmiticIA was born from a simple conviction: artificial intelligence only delivers value when it's built with the right architecture and engineering from day one.",
     pitch:
-      "I'm a geophysicist trained at USP and have been developing software for over 20 years — I started in scientific and high-performance computing (HPC), and worked for Petrobras. Artificial intelligence is nothing new to me: I programmed my first neural network in 2006 at university. Since 2020 I've been developing AI projects, well before ChatGPT. That's exactly why AmiticIA exists: artificial intelligence built with the right architecture and engineering from the start — solutions that work, scale, and don't become a headache down the road.",
-    name: "André Ferreira",
-    role: "Founder of AmiticIA",
-    initials: "AF",
+      "AmiticIA exists because AI only delivers value when it's built with the right architecture and engineering from day one. Our foundation is scientific and high-performance computing — and artificial intelligence is nothing new here: we've worked with neural networks since 2006 and have been building AI projects since 2020, well before ChatGPT. That's what we deliver: solutions that work, scale, and don't become a headache down the road.",
     highlights: [
       { icon: Code2, value: "20+ years", label: "building software" },
-      { icon: Brain, value: "AI since 2006", label: "first neural network at university" },
-      { icon: Cpu, value: "HPC", label: "high-performance computing — Petrobras" },
+      { icon: Brain, value: "AI since 2006", label: "before the hype" },
+      { icon: Cpu, value: "HPC", label: "high-performance scientific computing" },
     ],
   },
 };
 
-export const FounderSection = ({ language }: FounderSectionProps) => {
+export const AboutSection = ({ language }: AboutSectionProps) => {
   const t = content[language];
 
   return (
@@ -82,27 +76,14 @@ export const FounderSection = ({ language }: FounderSectionProps) => {
             </div>
           </div>
 
-          {/* Right: founder card */}
+          {/* Right: statement card */}
           <Card
             className="p-8 md:p-10 bg-card border-border relative overflow-hidden group hover:border-primary transition-colors duration-300 animate-fade-in"
             style={{ animationDelay: "0.15s" }}
           >
             <Quote className="absolute top-6 right-6 w-12 h-12 text-primary/10 group-hover:text-primary/20 transition-colors" />
 
-            <div className="relative z-10 flex flex-col h-full">
-              <div className="flex items-center gap-4 mb-6">
-                <div
-                  className="flex items-center justify-center w-14 h-14 rounded-full text-background text-lg font-extrabold tracking-wide flex-shrink-0 shadow-lg"
-                  style={{ backgroundImage: "var(--gradient-primary)" }}
-                >
-                  {t.initials}
-                </div>
-                <div>
-                  <div className="text-lg font-bold">{t.name}</div>
-                  <div className="text-sm text-primary">{t.role}</div>
-                </div>
-              </div>
-
+            <div className="relative z-10 flex flex-col h-full justify-center">
               <p className="text-base md:text-lg leading-relaxed text-muted-foreground border-l-2 border-primary/40 pl-5">
                 {t.pitch}
               </p>

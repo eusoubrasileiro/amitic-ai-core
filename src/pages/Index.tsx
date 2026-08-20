@@ -6,7 +6,7 @@ import { AgendaZapFeatureSection } from "@/components/AgendaZapFeatureSection";
 import { PatriciaFeatureSection } from "@/components/PatriciaFeatureSection";
 import { StackSection } from "@/components/StackSection";
 import { ProcessSection } from "@/components/ProcessSection";
-import { FounderSection } from "@/components/FounderSection";
+import { AboutSection } from "@/components/AboutSection";
 import { AudienceSection } from "@/components/AudienceSection";
 import { CTASection } from "@/components/CTASection";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
@@ -28,7 +28,7 @@ const Index = () => {
       <PatriciaFeatureSection language={language} />
       <StackSection language={language} />
       <ProcessSection language={language} />
-      <FounderSection language={language} />
+      <AboutSection language={language} />
       <AudienceSection language={language} />
       <CTASection language={language} />
       <Footer />
