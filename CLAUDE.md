@@ -39,7 +39,7 @@ src/
 public/             # Static files served as-is
 Dockerfile          # Multi-stage: node builder → nginx runtime
 nginx.conf          # SPA fallback + asset caching, listens on :3000
-amiticia-site.yml   # Production compose file (pulls pre-built image)
+amiticia-site.yml   # Reference copy of the VPS compose file - NOT deployed (see below)
 .github/workflows/
   deploy.yml        # CI/CD: build → push to ghcr.io → SSH deploy
 ```
@@ -75,7 +75,24 @@ docker compose -f amiticia-site.yml pull
 docker compose -f amiticia-site.yml up -d
 ```
 
-To roll back to a specific commit, edit the image tag in `amiticia-site.yml` to `ghcr.io/.../amitic-ai-core:sha-<short>` and run the pull+up commands above.
+To roll back to a specific commit, edit the image tag in the VPS's `amiticia-site.yml` to `ghcr.io/.../amitic-ai-core:sha-<short>` and run the pull+up commands above.
+
+### ⚠️ The compose file in this repo is NOT the deployed one
+
+`amiticia-site.yml` here is a **reference copy**. The authoritative file is
+`/root/amiticia-site/amiticia-site.yml` on the VPS — CI never uploads ours, it only runs
+`docker compose pull && up -d` against the file already on the host.
+
+Two consequences:
+
+- **Never copy the repo file up verbatim.** Its BasicAuth credential is a placeholder
+  (`andre:$$REPLACE_ON_VPS`), so deploying it as-is would leave `/k` unauthenticated. This repo is
+  **public** — the real hash must never be committed. Regenerate with
+  `htpasswd -nbB andre '<password>' | sed -e 's/\$/\$\$/g'`.
+- **Changes to routing, volumes or labels must be made on the VPS**, then mirrored here by hand.
+  Verify the two agree with:
+  `diff <(ssh hostinger 'cat /root/amiticia-site/amiticia-site.yml') amiticia-site.yml`
+  — the credential line should be the only difference.
 
 ### Gotchas
 
