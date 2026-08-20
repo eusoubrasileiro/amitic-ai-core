@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
+import { WHATSAPP_URL } from "@/lib/constants";
 interface HeroProps {
   language: "pt" | "en";
 }
@@ -23,7 +24,6 @@ export const Hero = ({
   language
 }: HeroProps) => {
   const t = content[language];
-  const whatsappUrl = "https://wa.me/5531988963436";
   return <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
       {/* Gradient glow background */}
       <div className="absolute inset-0 bg-gradient-glow opacity-30 animate-glow-pulse" />

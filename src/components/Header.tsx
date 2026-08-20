@@ -3,13 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Languages, Menu, MessageCircle } from "lucide-react";
 import logo from "@/assets/amiticia-logo.svg";
+import { WHATSAPP_URL } from "@/lib/constants";
 
 interface HeaderProps {
   language: "pt" | "en";
   onLanguageToggle: () => void;
 }
-
-const WHATSAPP_URL = "https://wa.me/5531988963436";
 
 const content = {
   pt: {

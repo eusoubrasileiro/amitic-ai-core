@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
+import { WHATSAPP_URL } from "@/lib/constants";
 
 interface CTASectionProps {
   language: "pt" | "en";
@@ -22,7 +23,6 @@ const content = {
 
 export const CTASection = ({ language }: CTASectionProps) => {
   const t = content[language];
-  const whatsappUrl = "https://wa.me/5531988963436";
 
   return (
     <section className="py-20 relative">
@@ -38,7 +38,7 @@ export const CTASection = ({ language }: CTASectionProps) => {
               size="lg"
               className="gap-2 text-lg px-8 py-6 glow-effect"
             >
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="w-5 h-5" />
                 {t.cta}
               </a>
