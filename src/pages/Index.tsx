@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { BenefitsSection } from "@/components/BenefitsSection";
-import { AgendaZapFeatureSection } from "@/components/AgendaZapFeatureSection";
+import { WahubFeatureSection } from "@/components/WahubFeatureSection";
 import { PatriciaFeatureSection } from "@/components/PatriciaFeatureSection";
 import { StackSection } from "@/components/StackSection";
 import { ProcessSection } from "@/components/ProcessSection";
@@ -24,7 +24,7 @@ const Index = () => {
       <Header language={language} onLanguageToggle={toggleLanguage} />
       <Hero language={language} />
       <BenefitsSection language={language} />
-      <AgendaZapFeatureSection language={language} />
+      <WahubFeatureSection language={language} />
       <PatriciaFeatureSection language={language} />
       <StackSection language={language} />
       <ProcessSection language={language} />
