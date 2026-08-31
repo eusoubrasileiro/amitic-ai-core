@@ -24,3 +24,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# host secrets — this repo is PUBLIC
+deploy/.env

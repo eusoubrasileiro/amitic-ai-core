@@ -1,0 +1,59 @@
+# Deploys from this repo: /opt/amiticia/amiticia-site/deploy/ on the Hostinger VPS.
+#
+# Moved here 2026-08-31. It previously lived at /root/amiticia-site/amiticia-site.yml
+# — outside any repo, one copy, on one disk.
+#
+# THIS REPOSITORY IS PUBLIC. The /k BasicAuth credential is therefore NOT inline
+# here: it comes from deploy/.env (gitignored, chmod 600) via
+# ${AMITICIA_K_BASICAUTH}. It used to be a literal apr1 hash in the label, which
+# would have been published to a public repo the moment this file was committed.
+# apr1 is MD5-based and crackable. Keep it out of git — see
+# standards/credentials.md: paths only, never values.
+#
+# `name: amiticia-site` pins the compose project so it does not inherit the name
+# of the directory this file sits in.
+#
+### Remember: docker compose version (non-swarm)
+### Use: `docker compose -f amiticia-site.yml up -d`
+
+name: amiticia-site
+
+services:
+  amiticia:
+    image: ghcr.io/eusoubrasileiro/amitic-ai-core:latest
+    pull_policy: always
+    restart: unless-stopped
+    networks:
+      - network_public
+    volumes:
+      # live amiticia-knowledge clone — read-only; nginx serves /k/data/ from here
+      - /storage/knowledge:/knowledge:ro
+      - /storage/amiticia-site/research-auth.conf:/etc/nginx/research-auth.conf:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=network_public"
+      # main marketing site (public)
+      - "traefik.http.routers.amiticia.rule=Host(`amiticia.cc`) || Host(`www.amiticia.cc`)"
+      - "traefik.http.routers.amiticia.entrypoints=websecure"
+      - "traefik.http.routers.amiticia.tls.certresolver=myresolver"
+      - "traefik.http.services.amiticia.loadbalancer.server.port=3000"
+      - "traefik.http.services.amiticia.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.amiticia.loadbalancer.healthcheck.interval=10s"
+      - "traefik.http.services.amiticia.loadbalancer.healthcheck.timeout=3s"
+      # private knowledge page — /k path, BasicAuth-gated, higher priority
+      - "traefik.http.routers.amiticia-k.rule=(Host(`amiticia.cc`) || Host(`www.amiticia.cc`)) && PathPrefix(`/k`)"
+      - "traefik.http.routers.amiticia-k.entrypoints=websecure"
+      - "traefik.http.routers.amiticia-k.tls.certresolver=myresolver"
+      - "traefik.http.routers.amiticia-k.priority=100"
+      - "traefik.http.routers.amiticia-k.middlewares=amiticia-k-auth"
+      - "traefik.http.middlewares.amiticia-k-auth.basicauth.users=${AMITICIA_K_BASICAUTH}"
+      # HTTP → HTTPS redirect
+      - "traefik.http.routers.amiticia-redirect.rule=Host(`amiticia.cc`) || Host(`www.amiticia.cc`)"
+      - "traefik.http.routers.amiticia-redirect.entrypoints=web"
+      - "traefik.http.routers.amiticia-redirect.middlewares=amiticia-https"
+      - "traefik.http.middlewares.amiticia-https.redirectscheme.scheme=https"
+
+networks:
+  network_public:
+    external: true
+    name: network_public
