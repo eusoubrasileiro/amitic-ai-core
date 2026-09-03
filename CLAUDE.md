@@ -23,7 +23,8 @@ npm install        # Install deps
 npm run dev        # Vite dev server on :8080
 npm run build      # Production build to dist/
 npm run lint       # ESLint
-npm run preview    # Preview built dist on :3000 (host mode)
+npm run preview    # Preview built dist (vite default :4173)
+npm start          # Preview built dist on :3000, host mode (what deploy runs)
 ```
 
 ## Project Layout
@@ -43,6 +44,24 @@ amiticia-site.yml   # Reference copy of the VPS compose file - NOT deployed (see
 .github/workflows/
   deploy.yml        # CI/CD: build → push to ghcr.io → SSH deploy
 ```
+
+## Behavioral probes
+
+This repo has no tests at all, and for a one-page marketing SPA that is a
+defensible trade — but it means **nothing** confirms the built bundle renders.
+A blank white screen ships exactly as cleanly as a working page.
+
+| Probe | Tool | Allowed target |
+|---|---|---|
+| The landing page renders visible content after a production build — no white screen, no console errors | `playwright` MCP | `npm run build && npm start` on `localhost:3000` — never `amiticia.cc` |
+| Client-side routes resolve under the SPA fallback rather than 404ing | `playwright` MCP | the same local preview |
+
+Run them at the merge/release boundary, not in the commit gate. Neither touches
+a third party, so both may run unattended.
+
+⚠️ Probe the local preview, never the live domain. `amiticia.cc` also fronts
+co-hosted paths owned by other repos (see below); driving it exercises their
+containers, not this build.
 
 ## Deployment
 
@@ -108,7 +127,7 @@ Paths co-hospedados atualmente:
 
 | Path | Projeto / container | Fonte |
 |---|---|---|
-| `/pibconfins` | Tesouraria PIB Confins (dashboard financeiro da igreja) | `~/Data/Documents/Finance/Tesouraria-PIB-Confins/` |
+| `/pibconfins` | Tesouraria PIB Confins (dashboard financeiro da igreja) | `side-projects/pibconfins-site/` |
 
 Ao adicionar uma nova rota neste SPA (ex.: `/blog`), confirmar antes que o path não conflita com nenhum co-hospedado.
 
